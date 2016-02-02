@@ -11,3 +11,8 @@
 	color: white;
 	background-color: #333;
 }
+
+#board {
+	width: 400px;
+	margin: 0 auto;
+}
