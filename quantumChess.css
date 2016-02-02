@@ -1,0 +1,13 @@
+#turn {
+	border-radius: 3px;
+}
+
+#turn.white {
+	color: black;
+	background-color: whitesmoke;
+}
+
+#turn.black {
+	color: white;
+	background-color: #333;
+}
