@@ -43,6 +43,10 @@ $(document).ready(function() {
 		}
 	};
 
+	var onSnapEnd = function() {
+		board.position(game.fen());
+	};
+
 	var config = {
 		"draggable": true,
 		"showNotation": false,
@@ -50,7 +54,8 @@ $(document).ready(function() {
 		"position": "start",
 		"onMouseoverSquare": onMouseoverSquare,
 		"onMouseoutSquare": onMouseoutSquare,
-		"onDragStart": onDragStart
+		"onDragStart": onDragStart,
+		"onSnapEnd": onSnapEnd
 	};
 	board = ChessBoard("board", config); // Initialize chessboard
 	game = new Chess(); // Game rules
