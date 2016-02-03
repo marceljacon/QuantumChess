@@ -43,6 +43,31 @@ $(document).ready(function() {
 		}
 	};
 
+	var onDragEnd = function(source, target) {
+		removeHighlights();
+
+		var notValid = true;
+		// Find all moves from square
+		game.moves({"square": source}).map(function(value, index) {
+			if(value.search(new RegExp(target)) !== -1) { // Make sure move is to target
+				notValid = false;
+				if(value.indexOf("=") !== -1) { // Check for promotion
+					console.log("Valid promotion move");
+					console.log(value);
+				}
+				else {
+					console.log("Standard valid move");
+					game.move({"from": source, "to": target});
+				}
+			}
+		});
+
+		// Illegal move
+		if(notValid) {
+			return "snapback";
+		}
+	};
+
 	var onSnapEnd = function() {
 		board.position(game.fen());
 	};
@@ -55,6 +80,7 @@ $(document).ready(function() {
 		"onMouseoverSquare": onMouseoverSquare,
 		"onMouseoutSquare": onMouseoutSquare,
 		"onDragStart": onDragStart,
+		"onDragEnd": onDragEnd,
 		"onSnapEnd": onSnapEnd
 	};
 	board = ChessBoard("board", config); // Initialize chessboard
