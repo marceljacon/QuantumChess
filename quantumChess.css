@@ -7,6 +7,10 @@
 	border-width: 20px;
 }
 
+.square-55d63 {
+	transition: background-color 0.3s;
+}
+
 #turn {
 	border-radius: 3px;
 }
