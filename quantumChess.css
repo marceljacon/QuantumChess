@@ -3,6 +3,10 @@
 	margin: 0 auto;
 }
 
+.board-b72b1 {
+	border-width: 20px;
+}
+
 #turn {
 	border-radius: 3px;
 }
