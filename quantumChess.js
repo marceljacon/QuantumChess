@@ -2,7 +2,7 @@ var board, game;
 
 $(document).ready(function() {
 	var removeHighlights = function() {
-		$("#board .square-55d63").css("background-color", "");
+		$("#board .square-55d63").css("backgroundColor", "");
 	};
 
 	var highlightSquare = function(square) {
@@ -13,7 +13,7 @@ $(document).ready(function() {
 			background = "#696969";
 		}
 
-		squareEl.css("background-color", background);
+		squareEl.css("backgroundColor", background);
 	};
 
 	var onMouseoverSquare = function(square, piece) {
