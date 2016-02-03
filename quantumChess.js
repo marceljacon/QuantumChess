@@ -1,21 +1,34 @@
 var board, game;
 
+function removeHighlights() {
+	$("#board .square-55d63").css("backgroundColor", "");
+}
+
+function highlightSquare(square) {
+	var squareEl = $("#board .square-" + square);
+
+	var background = "#a9a9a9";
+	if(squareEl.hasClass("black-3c85d")) {
+		background = "#696969";
+	}
+
+	squareEl.css("backgroundColor", background);
+}
+
+function updateTurnText(turn) {
+	if(turn === "w") {
+		$("#turn").addClass("white");
+		$("#turn").removeClass("black");
+		$("#turn").html("White's");
+	}
+	else {
+		$("#turn").addClass("black");
+		$("#turn").removeClass("white");
+		$("#turn").html("Black's");
+	}
+}
+
 $(document).ready(function() {
-	var removeHighlights = function() {
-		$("#board .square-55d63").css("backgroundColor", "");
-	};
-
-	var highlightSquare = function(square) {
-		var squareEl = $("#board .square-" + square);
-
-		var background = "#a9a9a9";
-		if(squareEl.hasClass("black-3c85d")) {
-			background = "#696969";
-		}
-
-		squareEl.css("backgroundColor", background);
-	};
-
 	var onMouseoverSquare = function(square, piece) {
 		// Possible moves for square
 		var moves = game.moves({
@@ -90,6 +103,8 @@ $(document).ready(function() {
 		if(notValid) {
 			return "snapback";
 		}
+
+		updateTurnText(game.turn());
 	};
 
 	var onSnapEnd = function() {
