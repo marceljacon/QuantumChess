@@ -48,19 +48,43 @@ $(document).ready(function() {
 
 		var notValid = true;
 		// Find all moves from square
-		game.moves({"square": source}).map(function(value, index) {
-			if(value.search(new RegExp(target)) !== -1) { // Make sure move is to target
+		var moves = game.moves({"square": source, "verbose": true});
+
+		for(var i = 0; i < moves.length; i++) {
+			if(moves[i].to === target) { // Make sure move is to target
 				notValid = false;
-				if(value.indexOf("=") !== -1) { // Check for promotion
+				if(moves[i].flags.indexOf("p") !== -1) { // Check for promotion
 					console.log("Valid promotion move");
-					console.log(value);
+					console.log(moves[i]);
+					var promote = prompt("Which piece would you like to promote this pawn to?");
+					switch(promote.toLowerCase()) {
+						case "q":
+						case "queen":
+							game.move({"from": source, "to": target, "promotion": "q"});
+							break;
+						case "n":
+						case "k":
+						case "knight":
+							game.move({"from": source, "to": target, "promotion": "n"});
+							break;
+						case "b":
+						case "bishop":
+							game.move({"from": source, "to": target, "promotion": "b"});
+							break;
+						case "r":
+						case "rook":
+						case "c":
+						case "castle":
+							game.move({"from": source, "to": target, "promotion": "r"});
+							break;
+					}
 				}
 				else {
-					console.log("Standard valid move");
 					game.move({"from": source, "to": target});
 				}
+				break;
 			}
-		});
+		}
 
 		// Illegal move
 		if(notValid) {
@@ -80,7 +104,7 @@ $(document).ready(function() {
 		"onMouseoverSquare": onMouseoverSquare,
 		"onMouseoutSquare": onMouseoutSquare,
 		"onDragStart": onDragStart,
-		"onDragEnd": onDragEnd,
+		"onDrop": onDragEnd,
 		"onSnapEnd": onSnapEnd
 	};
 	board = ChessBoard("board", config); // Initialize chessboard
