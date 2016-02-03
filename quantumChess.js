@@ -37,13 +37,20 @@ $(document).ready(function() {
 		removeHighlights();
 	};
 
+	var onDragStart = function(source, piece, position, orientation) {
+		if(game.game_over() || (game.turn() === "w" && piece.search(/^w/) === -1) || (game.turn() === "b" && piece.search(/^b/) === -1)) {
+			return false;
+		}
+	};
+
 	var config = {
 		"draggable": true,
 		"showNotation": false,
 		"pieceTheme": "lib/chessboardjs/img/chesspieces/wikipedia/{piece}.png",
 		"position": "start",
 		"onMouseoverSquare": onMouseoverSquare,
-		"onMouseoutSquare": onMouseoutSquare
+		"onMouseoutSquare": onMouseoutSquare,
+		"onDragStart": onDragStart
 	};
 	board = ChessBoard("board", config); // Initialize chessboard
 	game = new Chess(); // Game rules
