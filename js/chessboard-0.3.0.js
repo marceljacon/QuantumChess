@@ -1437,6 +1437,10 @@ widget.position = function(position, useAnimation) {
 	}
 };
 
+widget.quantumPosition = function(primaryPositions, secondaryPositions, mainPositions) {
+
+};
+
 widget.resize = function() {
 	// calulate the new square size
 	SQUARE_SIZE = calculateSquareSize();
