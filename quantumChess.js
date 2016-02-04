@@ -63,7 +63,7 @@ function displayBoard() {
 			secondaryObj[square] = secondaryObj[square].substring(0,1) + "?";
 		}
 	}
-	board.quantumPosition(primaryObj, secondaryObj, mainObj);
+	board.quantumPosition(mainObj, primaryObj, secondaryObj);
 }
 
 $(document).ready(function() {
