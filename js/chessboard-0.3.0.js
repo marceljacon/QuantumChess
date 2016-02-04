@@ -241,8 +241,6 @@ var ANIMATION_HAPPENING = false,
 	BOARD_BORDER_SIZE = 2,
 	CURRENT_ORIENTATION = 'white',
 	CURRENT_POSITION = {},
-	CURRENT_PRIMARY = {},
-	CURRENT_SECONDARY = {},
 	SQUARE_SIZE,
 	DRAGGED_PIECE,
 	DRAGGED_PIECE_LOCATION,
@@ -469,19 +467,8 @@ function expandConfig() {
 		cfg.trashSpeed = 100;
 	}
 
-	//
-	if (cfg.hasOwnProperty('quantum') === true && cfg.quantum === true) {
-		if (cfg.hasOwnProperty('secondaryPosition') === true && validPositionObject(cfg.position) === true) {
-			CURRENT_POSITION = deepCopy(START_POSITION);
-			CURRENT_PRIMARY = deepCopy(START_POSITION);
-		}
-
-		else {
-			error(7263, 'Invalid value passed to config.secondaryPosition.', cfg.secondaryPosition);
-		}
-	}
 	// make sure position is valid
-	else if (cfg.hasOwnProperty('position') === true) {
+	if (cfg.hasOwnProperty('position') === true) {
 		if (cfg.position === 'start') {
 			CURRENT_POSITION = deepCopy(START_POSITION);
 		}
