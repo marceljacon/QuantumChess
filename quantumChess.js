@@ -4,6 +4,16 @@ var PRIMARY = "p";
 var SECONDARY = "s";
 var UNKNOWN = "?";
 
+function shuffleArray(array) {
+    for (var i = array.length - 1; i > 0; i--) {
+        var j = Math.floor(Math.random() * (i + 1));
+        var temp = array[i];
+        array[i] = array[j];
+        array[j] = temp;
+    }
+    return array;
+}
+
 function removeHighlights() {
 	$("#board .square-55d63").css("backgroundColor", "");
 }
@@ -187,20 +197,16 @@ $(document).ready(function() {
 		displayBoard();
 	};
 
-	var config = {
-		"draggable": true,
-		"showNotation": false,
-		"pieceTheme": "lib/chessboardjs/img/chesspieces/wikipedia/{piece}.png",
-		"position": "start",
-		"onDragStart": onDragStart,
-		"onDrop": onDragEnd,
-		"onSnapEnd": onSnapEnd
-	};
-	board = ChessBoard("board", config); // Initialize chessboard
+	var secondaryArrayString = shuffleArray("rnbqbnrpppppppp".split()).join();
+	var secondaryInitialFen = secondaryArrayString.substring(0,4) + "k" + secondaryArrayString.substring(4,7) + "/" + secondaryArrayString.substring(7);
+	secondaryInitialFen += "/8/8/8/8/";
+	secondaryArrayString = shuffleArray("RNBQBNRPPPPPPPP".split()).join();
+	secondaryInitialFen += secondaryArrayString.substring(0,4) + "K" + secondaryArrayString.substring(4,7) + "/" + secondaryArrayString.substring(7);
+	secondaryInitialFen += " w KQkq - 0 1";
+
 	primary = new Chess();
-	secondary = new Chess();
+	secondary = new Chess(secondaryInitialFen);
 	state = ChessBoard.fenToObj(primary.fen());
-	console.log(state);
 	piecesKnown = ChessBoard.fenToObj(primary.fen());
 	for (var square in state) {
 		if (state[square].substring(1,2) === "K") {
@@ -212,5 +218,16 @@ $(document).ready(function() {
 			piecesKnown[square] = false;
 		}
 	}
-	console.log(state);
+
+
+	var config = {
+		"draggable": true,
+		"showNotation": false,
+		"pieceTheme": "lib/chessboardjs/img/chesspieces/wikipedia/{piece}.png",
+		"onDragStart": onDragStart,
+		"onDrop": onDragEnd,
+		"onSnapEnd": onSnapEnd
+	};
+	board = ChessBoard("board", config); // Initialize chessboard
+	displayBoard();
 });
