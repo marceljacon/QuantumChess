@@ -1,4 +1,8 @@
-var board, game;
+var board, primary, secondary, state, turn; // state: primary,secondary,unknown
+
+var PRIMARY = "p";
+var SECONDARY = "s";
+var UNKNOWN = "?";
 
 function removeHighlights() {
 	$("#board .square-55d63").css("backgroundColor", "");
@@ -27,33 +31,67 @@ function updateTurnText(turn) {
 		$("#turn").html("Black's");
 	}
 }
+function displayBoard() {
+	var primaryObj = ChessBoard.fenToObj(primary.fen());
+	var secondaryObj = ChessBoard.fenToObj(secondary.fen());
+	var mainObj = {};
+	for (var square in state) {
+		switch(state[square]) {
+			case PRIMARY:
+				mainObj[square] = primaryObj[square];
+				break;
+			case SECONDARY:
+				mainObj[square] = secondaryObj[square];
+				break;
+			case UNKNOWN:
+				mainObj[square] = primaryObj[square].substring(0,1) + "?"; //w? or b?
+				break;
+		}	
+	}
+	for (var square in piecesKnown) {
+		secondaryObj[square] = piecesKnown[square];
+	}
+	board.quantumPosition(primaryObj, secondaryObj, mainObj);
+}
 
 $(document).ready(function() {
-	var onMouseoverSquare = function(square, piece) {
-		// Possible moves for square
-		var moves = game.moves({
-			"square": square,
-			"verbose": true
-		});
-
-		if(moves.length === 0) {
-			return;
+	var onDragStart = function(source, piece, position, orientation) {
+		if (piecesQuantum.hasOwnProperty(source) {
+			delete piecesQuantum[source];
+			state[square] = (Math.random() < 0.5 ? PRIMARY : SECONDARY);
+		}
+		var moves;
+		if (state[square] === PRIMARY) {
+			if(primary.game_over() || (turn === "w" && piece.search(/^w/) === -1) || (turn === "b" && piece.search(/^b/) === -1)) {
+				return false;
+			}
+			moves = primary.moves({
+				"square": source,
+				"verbose": true
+			});
+		}
+		else if (state[square] === SECONDARY) {
+			/* TODO: deal with piecesKnown */
+			if(secondary.game_over() || (turn === "w" && piece.search(/^w/) === -1) || (turn === "b" && piece.search(/^b/) === -1)) {
+				return false;
+			}
+			moves = secondary.moves({
+				"square": source,
+				"verbose": true
+			});
+		}
+		else {
+			console.log("dang");
+		}
+		if (moves.length === 0) {
+			return false;
 		}
 
 		highlightSquare(square);
 		for(var i = 0; i < moves.length; i++) {
 			highlightSquare(moves[i].to);
 		}
-	};
-
-	var onMouseoutSquare = function(square, piece) {
-		removeHighlights();
-	};
-
-	var onDragStart = function(source, piece, position, orientation) {
-		if(game.game_over() || (game.turn() === "w" && piece.search(/^w/) === -1) || (game.turn() === "b" && piece.search(/^b/) === -1)) {
-			return false;
-		}
+		displayBoard()
 	};
 
 	var onDragEnd = function(source, target) {
@@ -61,7 +99,28 @@ $(document).ready(function() {
 
 		var notValid = true;
 		// Find all moves from square
-		var moves = game.moves({"square": source, "verbose": true});
+		var moves;
+		if (state[square] === PRIMARY) {
+			if(primary.game_over() || (turn === "w" && piece.search(/^w/) === -1) || (turn === "b" && piece.search(/^b/) === -1)) {
+				return false;
+			}
+			moves = primary.moves({
+				"square": source,
+				"verbose": true
+			});
+		}
+		else if (state[square] === SECONDARY) {
+			if(secondary.game_over() || (turn === "w" && piece.search(/^w/) === -1) || (turn === "b" && piece.search(/^b/) === -1)) {
+				return false;
+			}
+			moves = secondary.moves({
+				"square": source,
+				"verbose": true
+			});
+		}
+		else {
+			console.log("dang 2");
+		}
 
 		for(var i = 0; i < moves.length; i++) {
 			if(moves[i].to === target) { // Make sure move is to target
@@ -71,13 +130,18 @@ $(document).ready(function() {
 					console.log(moves[i]);
 					var promote = prompt("Which piece would you like to promote this pawn to?");
 					switch(promote.toLowerCase()) {
+						/* TODO: use new code for promotions */
+						/*
 						case "q":
 						case "queen":
 							game.move({"from": source, "to": target, "promotion": "q"});
 							break;
 						case "n":
 						case "k":
+						case "h":
 						case "knight":
+						case "horse":
+						case "horsey":
 							game.move({"from": source, "to": target, "promotion": "n"});
 							break;
 						case "b":
@@ -90,10 +154,13 @@ $(document).ready(function() {
 						case "castle":
 							game.move({"from": source, "to": target, "promotion": "r"});
 							break;
+						*/
 					}
 				}
 				else {
-					game.move({"from": source, "to": target});
+					primary.put(primary.remove(source), target);
+					secondary.put(secondary.remove(source), target);
+					/* TODO: light/dark square quantum changes */
 				}
 				break;
 			}
@@ -103,12 +170,13 @@ $(document).ready(function() {
 		if(notValid) {
 			return "snapback";
 		}
-
-		updateTurnText(game.turn());
+		displayBoard()
+		turn = (turn === "w" ? "b" : "w");
+		updateTurnText(turn);
 	};
 
 	var onSnapEnd = function() {
-		board.position(game.fen());
+		displayBoard();
 	};
 
 	var config = {
@@ -116,12 +184,13 @@ $(document).ready(function() {
 		"showNotation": false,
 		"pieceTheme": "lib/chessboardjs/img/chesspieces/wikipedia/{piece}.png",
 		"position": "start",
-		"onMouseoverSquare": onMouseoverSquare,
-		"onMouseoutSquare": onMouseoutSquare,
 		"onDragStart": onDragStart,
 		"onDrop": onDragEnd,
 		"onSnapEnd": onSnapEnd
 	};
 	board = ChessBoard("board", config); // Initialize chessboard
-	game = new Chess(); // Game rules
+	primary = new Chess();
+	secondary = new Chess();
+	/* TODO: initialize EVERYTHING */
+
 });
