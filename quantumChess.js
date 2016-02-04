@@ -1,4 +1,4 @@
-var board, primary, secondary, state, turn; // state: primary,secondary,unknown
+var board, primary, secondary, state, turn, piecesKnown; // state: primary,secondary,unknown
 
 var PRIMARY = "p";
 var SECONDARY = "s";
@@ -49,19 +49,22 @@ function displayBoard() {
 		}	
 	}
 	for (var square in piecesKnown) {
-		secondaryObj[square] = piecesKnown[square];
+		if (!piecesKnown[square]) {
+			secondaryObj[square] = secondaryObj[square].substring(0,1) + "?";
+		}
 	}
 	board.quantumPosition(primaryObj, secondaryObj, mainObj);
 }
 
 $(document).ready(function() {
 	var onDragStart = function(source, piece, position, orientation) {
-		if (piecesQuantum.hasOwnProperty(source) {
-			delete piecesQuantum[source];
-			state[square] = (Math.random() < 0.5 ? PRIMARY : SECONDARY);
+		if (state[source] === UNKNOWN) {
+			state[source] = (Math.random() < 0.5 ? PRIMARY : SECONDARY);
 		}
 		var moves;
-		if (state[square] === PRIMARY) {
+		console.log(state);
+		console.log(state[source]);
+		if (state[source] === PRIMARY) {
 			if(primary.game_over() || (turn === "w" && piece.search(/^w/) === -1) || (turn === "b" && piece.search(/^b/) === -1)) {
 				return false;
 			}
@@ -70,8 +73,7 @@ $(document).ready(function() {
 				"verbose": true
 			});
 		}
-		else if (state[square] === SECONDARY) {
-			/* TODO: deal with piecesKnown */
+		else if (state[source] === SECONDARY) {
 			if(secondary.game_over() || (turn === "w" && piece.search(/^w/) === -1) || (turn === "b" && piece.search(/^b/) === -1)) {
 				return false;
 			}
@@ -79,6 +81,7 @@ $(document).ready(function() {
 				"square": source,
 				"verbose": true
 			});
+			piecesKnown[source] = true;
 		}
 		else {
 			console.log("dang");
@@ -87,7 +90,7 @@ $(document).ready(function() {
 			return false;
 		}
 
-		highlightSquare(square);
+		highlightSquare(source);
 		for(var i = 0; i < moves.length; i++) {
 			highlightSquare(moves[i].to);
 		}
@@ -160,7 +163,18 @@ $(document).ready(function() {
 				else {
 					primary.put(primary.remove(source), target);
 					secondary.put(secondary.remove(source), target);
-					/* TODO: light/dark square quantum changes */
+					if (primary.square_color(target) === "dark") {
+						state[target] = UNKNOWN;
+					}
+					else if (primary.square_color(target) === "light") {
+						state[target] = state[source];
+					}
+					else {
+						console.log("dang 3");
+					}
+					piecesKnown[target] = piecesKnown[source];
+					delete piecesKnown[source];
+					delete state[source];
 				}
 				break;
 			}
@@ -191,6 +205,18 @@ $(document).ready(function() {
 	board = ChessBoard("board", config); // Initialize chessboard
 	primary = new Chess();
 	secondary = new Chess();
-	/* TODO: initialize EVERYTHING */
-
+	state = ChessBoard.fenToObj(primary.fen());
+	console.log(state);
+	piecesKnown = ChessBoard.fenToObj(primary.fen());
+	for (var square in state) {
+		if (state[square].substring(1,2) === "K") {
+			state[square] = PRIMARY;
+			piecesKnown[square] = true;
+		}
+		else {
+			state[square] = UNKNOWN;
+			piecesKnown[square] = false;
+		}
+	}
+	console.log(state);
 });
