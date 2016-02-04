@@ -976,6 +976,18 @@ function drawPositionInstant() {
 	}
 }
 
+function drawQuantumPositionInstant(primaryPositions, secondaryPositions) {
+	// clear the board
+	boardEl.find('.' + CSS.piece).remove();
+
+	// add the pieces
+	for (var i in CURRENT_POSITION) {
+		if (CURRENT_POSITION.hasOwnProperty(i) !== true) continue;
+
+		$('#' + SQUARE_ELS_IDS[i]).append(buildQuantumPiece(CURRENT_POSITION[i], primaryPositions[i], secondaryPositions[i]));
+	}
+}
+
 function drawBoard() {
 	boardEl.html(buildBoard(CURRENT_ORIENTATION));
 	drawPositionInstant();
