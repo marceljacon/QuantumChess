@@ -200,8 +200,8 @@ $(document).ready(function() {
 	var secondaryArrayString = shuffleArray("rnbqbnrpppppppp".split()).join();
 	var secondaryInitialFen = secondaryArrayString.substring(0,4) + "k" + secondaryArrayString.substring(4,7) + "/" + secondaryArrayString.substring(7);
 	secondaryInitialFen += "/8/8/8/8/";
-	secondaryArrayString = shuffleArray("RNBQBNRPPPPPPPP".split()).join();
-	secondaryInitialFen += secondaryArrayString.substring(0,4) + "K" + secondaryArrayString.substring(4,7) + "/" + secondaryArrayString.substring(7);
+	secondaryArrayString = shuffleArray("PPPPPPPPRNBQBNR".split()).join();
+	secondaryInitialFen += secondaryArrayString.substring(0,8) + "/" + secondaryArrayString.substring(8,12) + "K" + secondaryArrayString.substring(12);
 	secondaryInitialFen += " w KQkq - 0 1";
 
 	primary = new Chess();
