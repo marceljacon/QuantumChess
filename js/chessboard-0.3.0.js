@@ -1451,7 +1451,7 @@ widget.position = function(position, useAnimation) {
 	}
 };
 
-widget.quantumPosition = function(primaryPositions, secondaryPositions, mainPositions) {
+widget.quantumPosition = function(mainPositions, primaryPositions, secondaryPositions) {
 	CURRENT_POSITION = mainPositions;
 	drawQuantumPositionInstant(primaryPositions, secondaryPositions);
 };
