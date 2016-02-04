@@ -1439,25 +1439,9 @@ widget.position = function(position, useAnimation) {
 	}
 };
 
-widget.quantumPosition = function(primaryPositions, secondaryPositions, mainPositions, useAnimation) {
-	// default for useAnimations is true
-	if (useAnimation !== false) {
-		useAnimation = true;
-	}
-
-	if (useAnimation === true) {
-		// start the animations
-		doAnimations(calculateAnimations(CURRENT_POSITION, mainPositions),
-			CURRENT_POSITION, mainPositions);
-
-		// set the new position
-		setCurrentPosition(mainPositions);
-	}
-	// instant update
-	else {
-		setCurrentPosition(mainPositions);
-		drawPositionInstant();
-	}
+widget.quantumPosition = function(primaryPositions, secondaryPositions, mainPositions) {
+	CURRENT_POSITION = mainPositions;
+	drawQuantumPositionInstant(primaryPositions, secondaryPositions);
 };
 
 widget.resize = function() {
