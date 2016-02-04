@@ -104,18 +104,12 @@ $(document).ready(function() {
 		// Find all moves from square
 		var moves;
 		if (state[source] === PRIMARY) {
-			if(primary.game_over() || (turn === "w" && piece.search(/^w/) === -1) || (turn === "b" && piece.search(/^b/) === -1)) {
-				return false;
-			}
 			moves = primary.moves({
 				"square": source,
 				"verbose": true
 			});
 		}
 		else if (state[source] === SECONDARY) {
-			if(secondary.game_over() || (turn === "w" && piece.search(/^w/) === -1) || (turn === "b" && piece.search(/^b/) === -1)) {
-				return false;
-			}
 			moves = secondary.moves({
 				"square": source,
 				"verbose": true
