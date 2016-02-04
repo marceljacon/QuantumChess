@@ -103,7 +103,7 @@ $(document).ready(function() {
 		var notValid = true;
 		// Find all moves from square
 		var moves;
-		if (state[square] === PRIMARY) {
+		if (state[source] === PRIMARY) {
 			if(primary.game_over() || (turn === "w" && piece.search(/^w/) === -1) || (turn === "b" && piece.search(/^b/) === -1)) {
 				return false;
 			}
@@ -112,7 +112,7 @@ $(document).ready(function() {
 				"verbose": true
 			});
 		}
-		else if (state[square] === SECONDARY) {
+		else if (state[source] === SECONDARY) {
 			if(secondary.game_over() || (turn === "w" && piece.search(/^w/) === -1) || (turn === "b" && piece.search(/^b/) === -1)) {
 				return false;
 			}
