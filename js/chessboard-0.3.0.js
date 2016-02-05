@@ -982,19 +982,12 @@ function drawPositionInstant() {
 	for (var i in CURRENT_POSITION) {
 		if (CURRENT_POSITION.hasOwnProperty(i) !== true) continue;
 
-		$('#' + SQUARE_ELS_IDS[i]).append(buildPiece(CURRENT_POSITION[i]));
-	}
-}
-
-function drawQuantumPositionInstant(primaryPositions, secondaryPositions) {
-	// clear the board
-	boardEl.find('.' + CSS.piece).remove();
-
-	// add the pieces
-	for (var i in CURRENT_POSITION) {
-		if (CURRENT_POSITION.hasOwnProperty(i) !== true) continue;
-
-		$('#' + SQUARE_ELS_IDS[i]).append(buildQuantumPiece(CURRENT_POSITION[i], primaryPositions[i], secondaryPositions[i]));
+		if (cfg.hasOwnProperty('quantum') === true && cfg.quantum === true) {
+			$('#' + SQUARE_ELS_IDS[i]).append(buildQuantumPiece(CURRENT_POSITION[i], CURRENT_PRIMARY[i], CURRENT_SECONDARY[i]));
+		}
+		else {
+			$('#' + SQUARE_ELS_IDS[i]).append(buildPiece(CURRENT_POSITION[i]));
+		}
 	}
 }
 
@@ -1463,7 +1456,9 @@ widget.position = function(position, useAnimation) {
 
 widget.quantumPosition = function(mainPositions, primaryPositions, secondaryPositions) {
 	CURRENT_POSITION = mainPositions;
-	drawQuantumPositionInstant(primaryPositions, secondaryPositions);
+	CURRENT_PRIMARY = primaryPositions;
+	CURRENT_SECONDARY = secondaryPositions;
+	drawPositionInstant();
 };
 
 widget.resize = function() {
