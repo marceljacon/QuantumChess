@@ -671,6 +671,16 @@ function buildPiece(piece, hidden, id) {
 	return html;
 }
 
+function buildQuantumPiece(main, primary, secondary) {
+	var html = '<div class="' + CSS.piece + '" data-piece="' + main + '">';
+	html += '<img src="' + buildPieceImgSrc(main.replace(/\?/, "Quantum")) + '" class="state" />';
+	html += '<img src="' + buildPieceImgSrc(primary) + '" class="primary" />';
+	html += '<img src="' + buildPieceImgSrc(secondary.replace(/\?/, "Quantum")) + '" class="secondary" />';
+	html += '</div>';
+
+	return html;
+}
+
 function buildSparePieces(color) {
 	var pieces = ['wK', 'wQ', 'wR', 'wB', 'wN', 'wP'];
 	if (color === 'black') {
