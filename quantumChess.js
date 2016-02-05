@@ -1,4 +1,4 @@
-var board, primary, secondary, state, turn, piecesKnown; // state: primary,secondary,unknown
+var board, primary, secondary, state, turn, piecesKnown, locked; // state: primary,secondary,unknown
 
 var PRIMARY = "p";
 var SECONDARY = "s";
@@ -29,7 +29,11 @@ function highlightSquare(square) {
 	squareEl.css("backgroundColor", background);
 }
 
-function updateTurnText(turn) {
+function updateTurn() {
+	locked = null;
+	turn = (turn === "w" ? "b" : "w");
+	primary.load(primary.fen().replace(/\s[wb]/, " " + turn));
+	secondary.load(secondary.fen().replace(/\s[wb]/, " " + turn));
 	if(turn === "w") {
 		$("#turn").addClass("red");
 		$("#turn").removeClass("black");
@@ -76,6 +80,11 @@ $(document).ready(function() {
 			}
 		}
 
+		if (locked !== null && locked !== source) {
+			return false;
+		}
+		locked = source;
+
 		var initiallyUnknown = false;
 		if (state[source] === UNKNOWN) {
 			initiallyUnknown = true;
@@ -95,14 +104,11 @@ $(document).ready(function() {
 				"verbose": true
 			});
 			piecesKnown[source] = true;
-		}
-		else {
-			console.log("dang");
-		}
-		console.log(moves);
+		}		
+		displayBoard();
 
 		if (moves.length === 0 && initiallyUnknown) {
-			turn = (turn === "w" ? "b" : "w");
+			updateTurn();
 			return false;
 		}
 
@@ -110,13 +116,11 @@ $(document).ready(function() {
 		for(var i = 0; i < moves.length; i++) {
 			highlightSquare(moves[i].to);
 		}
-		displayBoard()
 	};
 
 	var onDragEnd = function(source, target) {
 		removeHighlights();
 
-		var notValid = true;
 		// Find all moves from square
 		var moves;
 		if (state[source] === PRIMARY) {
@@ -131,13 +135,11 @@ $(document).ready(function() {
 				"verbose": true
 			});
 		}
-		else {
-			console.log("dang 2");
-		}
 
+		var valid = false;
 		for(var i = 0; i < moves.length; i++) {
 			if(moves[i].to === target) { // Make sure move is to target
-				notValid = false;
+				valid = true;
 				if(moves[i].flags.indexOf("p") !== -1) { // Check for promotion
 					console.log("Valid promotion move");
 					console.log(moves[i]);
@@ -170,7 +172,7 @@ $(document).ready(function() {
 						*/
 					}
 				}
-				else {
+				else { // Valid move, not promotion
 					primary.put(primary.remove(source), target);
 					secondary.put(secondary.remove(source), target);
 					if (primary.square_color(target) === "dark") {
@@ -179,24 +181,20 @@ $(document).ready(function() {
 					else if (primary.square_color(target) === "light") {
 						state[target] = state[source];
 					}
-					else {
-						console.log("dang 3");
-					}
 					piecesKnown[target] = piecesKnown[source];
 					delete piecesKnown[source];
 					delete state[source];
+					updateTurn();
 				}
 				break;
 			}
 		}
 
-		// Illegal move
-		if(notValid) {
+
+		displayBoard();
+		if (!valid) { // Move not to target; still locked
 			return "snapback";
 		}
-		displayBoard()
-		turn = (turn === "w" ? "b" : "w");
-		updateTurnText(turn);
 	};
 
 	var onSnapEnd = function() {
@@ -209,8 +207,6 @@ $(document).ready(function() {
 	secondaryArrayString = shuffleArray("PPPPPPPPRNBQBNR".split("")).join("");
 	secondaryInitialFen += secondaryArrayString.substring(0,8) + "/" + secondaryArrayString.substring(8,12) + "K" + secondaryArrayString.substring(12);
 	secondaryInitialFen += " w - - 0 1";
-
-	console.log(secondaryInitialFen);
 
 	primary = new Chess("rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w - - 0 1");
 	secondary = new Chess(secondaryInitialFen);
@@ -228,6 +224,7 @@ $(document).ready(function() {
 	}
 
 	turn = "w";
+	locked = null;
 
 	var config = {
 		"quantum": true,
