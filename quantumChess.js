@@ -221,9 +221,10 @@ $(document).ready(function() {
 
 
 	var config = {
+		"quantum": true,
 		"draggable": true,
 		"showNotation": false,
-		"pieceTheme": "lib/chessboardjs/img/chesspieces/wikipedia/{piece}.png",
+		"pieceTheme": "lib/chessboardjs/img/chesspieces/{piece}.png",
 		"onDragStart": onDragStart,
 		"onDrop": onDragEnd,
 		"onSnapEnd": onSnapEnd
