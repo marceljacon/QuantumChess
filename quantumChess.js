@@ -80,6 +80,8 @@ $(document).ready(function() {
 			}
 		}
 
+		console.log(locked);
+
 		if (locked !== null && locked !== source) {
 			return false;
 		}
@@ -95,13 +97,15 @@ $(document).ready(function() {
 		if (state[source] === PRIMARY) {
 			moves = primary.moves({
 				"square": source,
-				"verbose": true
+				"verbose": true,
+				"legal": false
 			});
 		}
 		else if (state[source] === SECONDARY) {
 			moves = secondary.moves({
 				"square": source,
-				"verbose": true
+				"verbose": true,
+				"legal": false
 			});
 			piecesKnown[source] = true;
 		}
@@ -127,13 +131,15 @@ $(document).ready(function() {
 		if (state[source] === PRIMARY) {
 			moves = primary.moves({
 				"square": source,
-				"verbose": true
+				"verbose": true,
+				"legal": false
 			});
 		}
 		else if (state[source] === SECONDARY) {
 			moves = secondary.moves({
 				"square": source,
-				"verbose": true
+				"verbose": true,
+				"legal": false
 			});
 		}
 
