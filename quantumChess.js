@@ -219,6 +219,7 @@ $(document).ready(function() {
 		}
 	}
 
+	turn = "w";
 
 	var config = {
 		"quantum": true,
