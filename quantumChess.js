@@ -46,6 +46,47 @@ function updateTurn() {
 		$("#turn").html("Black's");
 	}
 }
+function endTurn(source, target) {
+	if (primary.square_color(target) === "dark") {
+		state[target] = UNKNOWN;
+	}
+	else if (primary.square_color(target) === "light") {
+		state[target] = state[source];
+	}
+	piecesKnown[target] = piecesKnown[source];
+	delete piecesKnown[source];
+	delete state[source];
+	updateTurn();
+}
+function promotePiece(source, target) {
+	var html = "";
+	html += '<div id="buttons">';
+	for (var i = 0; i < 4; i++) {
+		var letter = "bnrq".split("")[i];
+		html += '<button data-piecetype="' + letter + '">';
+		html += '<img src="lib/chessboardjs/img/chesspieces/' + turn + letter.toUpperCase() + '.png">';
+		html += '</button>';
+	}
+	html += '</div>';
+	sweetAlert({
+		title: "Which piece would you like to promote this pawn to?",
+		text: html,
+		html: true,
+		showConfirmButton: false,
+		allowEscapeKey: false	
+	});
+	$("#buttons button").click(function(e) {
+		sweetAlert.close();
+		var letter = $(this).data("piecetype");
+		primary.remove(source);
+		primary.put({
+			type: letter,
+			color: turn
+		}, target);
+		secondary.put(secondary.remove(source), target);
+		$(this).off(e);
+	})
+}
 function displayBoard() {
 	var primaryObj = ChessBoard.fenToObj(primary.fen());
 	var secondaryObj = ChessBoard.fenToObj(secondary.fen());
@@ -73,11 +114,9 @@ function displayBoard() {
 
 $(document).ready(function() {
 	var onDragStart = function(source, piece, position, orientation) {
-		if (state[source] === PRIMARY || state[source] === SECONDARY) {
-			/* TODO: check if king is taken */
-			if ((turn === "w" && piece.search(/^w/) === -1) || (turn === "b" && piece.search(/^b/) === -1)) {
-				return false;
-			}
+		/* TODO: check if king is taken */
+		if ((turn === "w" && piece.search(/^w/) === -1) || (turn === "b" && piece.search(/^b/) === -1)) {
+			return false;
 		}
 
 		console.log(locked);
@@ -101,7 +140,7 @@ $(document).ready(function() {
 				"legal": false
 			});
 		}
-		else if (state[source] === SECONDARY) {
+		if (state[source] === SECONDARY) {
 			moves = secondary.moves({
 				"square": source,
 				"verbose": true,
@@ -116,6 +155,10 @@ $(document).ready(function() {
 			updateTurn();
 			return false;
 		}
+		if (moves.length === 0) {
+			locked = null;
+			return false;
+		}
 
 		highlightSquare(source);
 		for (var i = 0; i < moves.length; i++) {
@@ -128,19 +171,23 @@ $(document).ready(function() {
 
 		// Find all moves from square
 		var moves;
+		var game;
 		if (state[source] === PRIMARY) {
-			moves = primary.moves({
-				"square": source,
-				"verbose": true,
-				"legal": false
-			});
+			game = primary;
 		}
-		else if (state[source] === SECONDARY) {
-			moves = secondary.moves({
-				"square": source,
-				"verbose": true,
-				"legal": false
-			});
+		if (state[source] === SECONDARY) {
+			game = secondary;
+		}
+		moves = game.moves({
+			"square": source,
+			"verbose": true,
+			"legal": false
+		});
+
+		// promote if pawn is active at ends
+		if (source === target && game.get(source).type === "p" && ((source.substring(1) === "8" && turn === "w") || (source.substring(1) === "1" && turn === "b"))) {
+			promotePiece(source, target);
+			endTurn(source, target);
 		}
 
 		var valid = false;
@@ -148,52 +195,15 @@ $(document).ready(function() {
 			if (moves[i].to === target) { // Make sure move is to target
 				valid = true;
 				if (moves[i].flags.indexOf("p") !== -1) { // Check for promotion
-					console.log("Valid promotion move");
-					console.log(moves[i]);
-					var promote = prompt("Which piece would you like to promote this pawn to?");
-					switch (promote.toLowerCase()) {
-						/* TODO: use new code for promotions */
-						/*
-						case "q":
-						case "queen":
-							game.move({"from": source, "to": target, "promotion": "q"});
-							break;
-						case "n":
-						case "k":
-						case "h":
-						case "knight":
-						case "horse":
-						case "horsey":
-							game.move({"from": source, "to": target, "promotion": "n"});
-							break;
-						case "b":
-						case "bishop":
-							game.move({"from": source, "to": target, "promotion": "b"});
-							break;
-						case "r":
-						case "rook":
-						case "c":
-						case "castle":
-							game.move({"from": source, "to": target, "promotion": "r"});
-							break;
-						*/
-					}
+					promotePiece(source, target);
+					endTurn(source, target);
 				}
 				else { // Valid move, not promotion
 					primary.put(primary.remove(source), target);
 					secondary.put(secondary.remove(source), target);
-					if (primary.square_color(target) === "dark") {
-						state[target] = UNKNOWN;
-					}
-					else if (primary.square_color(target) === "light") {
-						state[target] = state[source];
-					}
-					piecesKnown[target] = piecesKnown[source];
-					delete piecesKnown[source];
-					delete state[source];
-					updateTurn();
+					endTurn(source, target);
 				}
-				break; // Break after first valid move
+				break;
 			}
 		}
 
