@@ -1,17 +1,17 @@
-var board, primary, secondary, state, turn, piecesKnown, locked; // state: primary,secondary,unknown
+var board, primary, secondary, state, turn, piecesKnown, locked; // state: primary, secondary, unknown
 
 var PRIMARY = "p";
 var SECONDARY = "s";
 var UNKNOWN = "?";
 
 function shuffleArray(array) {
-    for (var i = array.length - 1; i > 0; i--) {
-        var j = Math.floor(Math.random() * (i + 1));
-        var temp = array[i];
-        array[i] = array[j];
-        array[j] = temp;
-    }
-    return array;
+	for (var i = array.length - 1; i > 0; i--) {
+		var j = Math.floor(Math.random() * (i + 1));
+		var temp = array[i];
+		array[i] = array[j];
+		array[j] = temp;
+	}
+	return array;
 }
 
 function removeHighlights() {
@@ -22,7 +22,7 @@ function highlightSquare(square) {
 	var squareEl = $("#board .square-" + square);
 
 	var background = "#a9a9a9";
-	if(squareEl.hasClass("black-3c85d")) {
+	if (squareEl.hasClass("black-3c85d")) {
 		background = "#696969";
 	}
 
@@ -34,7 +34,8 @@ function updateTurn() {
 	turn = (turn === "w" ? "b" : "w");
 	primary.load(primary.fen().replace(/\s[wb]/, " " + turn));
 	secondary.load(secondary.fen().replace(/\s[wb]/, " " + turn));
-	if(turn === "w") {
+
+	if (turn === "w") {
 		$("#turn").addClass("red");
 		$("#turn").removeClass("black");
 		$("#turn").html("Red's");
@@ -50,7 +51,7 @@ function displayBoard() {
 	var secondaryObj = ChessBoard.fenToObj(secondary.fen());
 	var mainObj = {};
 	for (var square in state) {
-		switch(state[square]) {
+		switch (state[square]) {
 			case PRIMARY:
 				mainObj[square] = primaryObj[square];
 				break;
@@ -72,10 +73,9 @@ function displayBoard() {
 
 $(document).ready(function() {
 	var onDragStart = function(source, piece, position, orientation) {
-
 		if (state[source] === PRIMARY || state[source] === SECONDARY) {
 			/* TODO: check if king is taken */
-			if((turn === "w" && piece.search(/^w/) === -1) || (turn === "b" && piece.search(/^b/) === -1)) {
+			if ((turn === "w" && piece.search(/^w/) === -1) || (turn === "b" && piece.search(/^b/) === -1)) {
 				return false;
 			}
 		}
@@ -104,7 +104,8 @@ $(document).ready(function() {
 				"verbose": true
 			});
 			piecesKnown[source] = true;
-		}		
+		}
+
 		displayBoard();
 
 		if (moves.length === 0 && initiallyUnknown) {
@@ -113,7 +114,7 @@ $(document).ready(function() {
 		}
 
 		highlightSquare(source);
-		for(var i = 0; i < moves.length; i++) {
+		for (var i = 0; i < moves.length; i++) {
 			highlightSquare(moves[i].to);
 		}
 	};
@@ -137,14 +138,14 @@ $(document).ready(function() {
 		}
 
 		var valid = false;
-		for(var i = 0; i < moves.length; i++) {
-			if(moves[i].to === target) { // Make sure move is to target
+		for (var i = 0; i < moves.length; i++) {
+			if (moves[i].to === target) { // Make sure move is to target
 				valid = true;
-				if(moves[i].flags.indexOf("p") !== -1) { // Check for promotion
+				if (moves[i].flags.indexOf("p") !== -1) { // Check for promotion
 					console.log("Valid promotion move");
 					console.log(moves[i]);
 					var promote = prompt("Which piece would you like to promote this pawn to?");
-					switch(promote.toLowerCase()) {
+					switch (promote.toLowerCase()) {
 						/* TODO: use new code for promotions */
 						/*
 						case "q":
@@ -186,7 +187,7 @@ $(document).ready(function() {
 					delete state[source];
 					updateTurn();
 				}
-				break;
+				break; // Break after first valid move
 			}
 		}
 
@@ -202,10 +203,10 @@ $(document).ready(function() {
 	};
 
 	var secondaryArrayString = shuffleArray("rnbqbnrpppppppp".split("")).join("");
-	var secondaryInitialFen = secondaryArrayString.substring(0,4) + "k" + secondaryArrayString.substring(4,7) + "/" + secondaryArrayString.substring(7);
+	var secondaryInitialFen = secondaryArrayString.substring(0, 4) + "k" + secondaryArrayString.substring(4, 7) + "/" + secondaryArrayString.substring(7);
 	secondaryInitialFen += "/8/8/8/8/";
 	secondaryArrayString = shuffleArray("PPPPPPPPRNBQBNR".split("")).join("");
-	secondaryInitialFen += secondaryArrayString.substring(0,8) + "/" + secondaryArrayString.substring(8,12) + "K" + secondaryArrayString.substring(12);
+	secondaryInitialFen += secondaryArrayString.substring(0, 8) + "/" + secondaryArrayString.substring(8, 12) + "K" + secondaryArrayString.substring(12);
 	secondaryInitialFen += " w - - 0 1";
 
 	primary = new Chess("rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w - - 0 1");
@@ -213,7 +214,7 @@ $(document).ready(function() {
 	state = ChessBoard.fenToObj(primary.fen());
 	piecesKnown = ChessBoard.fenToObj(primary.fen());
 	for (var square in state) {
-		if (state[square].substring(1,2) === "K") {
+		if (state[square].substring(1, 2) === "K") {
 			state[square] = PRIMARY;
 			piecesKnown[square] = true;
 		}
