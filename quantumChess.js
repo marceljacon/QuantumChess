@@ -68,25 +68,28 @@ function displayBoard() {
 
 $(document).ready(function() {
 	var onDragStart = function(source, piece, position, orientation) {
-		if (state[source] === UNKNOWN) {
-			state[source] = (Math.random() < 0.5 ? PRIMARY : SECONDARY);
-		}
-		var moves;
-		console.log(state);
-		console.log(state[source]);
-		if (state[source] === PRIMARY) {
-			if(primary.game_over() || (turn === "w" && piece.search(/^w/) === -1) || (turn === "b" && piece.search(/^b/) === -1)) {
+
+		if (state[source] === PRIMARY || state[source] === SECONDARY) {
+			/* TODO: check if king is taken */
+			if((turn === "w" && piece.search(/^w/) === -1) || (turn === "b" && piece.search(/^b/) === -1)) {
 				return false;
 			}
+		}
+
+		var initiallyUnknown = false;
+		if (state[source] === UNKNOWN) {
+			initiallyUnknown = true;
+			state[source] = (Math.random() < 0.5 ? PRIMARY : SECONDARY);
+		}
+
+		var moves;
+		if (state[source] === PRIMARY) {
 			moves = primary.moves({
 				"square": source,
 				"verbose": true
 			});
 		}
 		else if (state[source] === SECONDARY) {
-			if(secondary.game_over() || (turn === "w" && piece.search(/^w/) === -1) || (turn === "b" && piece.search(/^b/) === -1)) {
-				return false;
-			}
 			moves = secondary.moves({
 				"square": source,
 				"verbose": true
@@ -96,7 +99,10 @@ $(document).ready(function() {
 		else {
 			console.log("dang");
 		}
-		if (moves.length === 0) {
+		console.log(moves);
+
+		if (moves.length === 0 && initiallyUnknown) {
+			turn = (turn === "w" ? "b" : "w");
 			return false;
 		}
 
@@ -197,14 +203,16 @@ $(document).ready(function() {
 		displayBoard();
 	};
 
-	var secondaryArrayString = shuffleArray("rnbqbnrpppppppp".split()).join();
+	var secondaryArrayString = shuffleArray("rnbqbnrpppppppp".split("")).join("");
 	var secondaryInitialFen = secondaryArrayString.substring(0,4) + "k" + secondaryArrayString.substring(4,7) + "/" + secondaryArrayString.substring(7);
 	secondaryInitialFen += "/8/8/8/8/";
-	secondaryArrayString = shuffleArray("PPPPPPPPRNBQBNR".split()).join();
+	secondaryArrayString = shuffleArray("PPPPPPPPRNBQBNR".split("")).join("");
 	secondaryInitialFen += secondaryArrayString.substring(0,8) + "/" + secondaryArrayString.substring(8,12) + "K" + secondaryArrayString.substring(12);
-	secondaryInitialFen += " w KQkq - 0 1";
+	secondaryInitialFen += " w - - 0 1";
 
-	primary = new Chess();
+	console.log(secondaryInitialFen);
+
+	primary = new Chess("rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w - - 0 1");
 	secondary = new Chess(secondaryInitialFen);
 	state = ChessBoard.fenToObj(primary.fen());
 	piecesKnown = ChessBoard.fenToObj(primary.fen());
