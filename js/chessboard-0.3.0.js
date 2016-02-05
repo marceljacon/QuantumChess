@@ -671,8 +671,16 @@ function buildPiece(piece, hidden, id) {
 	return html;
 }
 
-function buildQuantumPiece(main, primary, secondary) {
-	var html = '<div class="' + CSS.piece + '" data-piece="' + main + '">';
+function buildQuantumPiece(main, primary, secondary, hidden, id) {
+	var html = '<div';
+	if (id && typeof id === "string") {
+		html += ' id="' + id + '"';
+	}
+	html += ' class="' + CSS.piece + '" data-piece="' + main + '"';
+	if (hidden === true) {
+		html += ' style="display: none;"';
+	}
+	html += '>';
 	html += '<img src="' + buildPieceImgSrc(main.replace(/\?/, "Quantum")) + '" class="state" />';
 	html += '<img src="' + buildPieceImgSrc(primary) + '" class="primary" />';
 	html += '<img src="' + buildPieceImgSrc(secondary.replace(/\?/, "Quantum")) + '" class="secondary" />';
@@ -982,7 +990,7 @@ function drawPositionInstant() {
 	for (var i in CURRENT_POSITION) {
 		if (CURRENT_POSITION.hasOwnProperty(i) !== true) continue;
 
-		if (cfg.hasOwnProperty('quantum') === true && cfg.quantum === true) {
+		if (cfg.hasOwnProperty("quantum") === true && cfg.quantum === true) {
 			$('#' + SQUARE_ELS_IDS[i]).append(buildQuantumPiece(CURRENT_POSITION[i], CURRENT_PRIMARY[i], CURRENT_SECONDARY[i]));
 		}
 		else {
@@ -1701,7 +1709,11 @@ function initDom() {
 
 	// create the drag piece
 	var draggedPieceId = createId();
-	$('body').append(buildPiece('wP', true, draggedPieceId));
+	if (cfg.hasOwnProperty("quantum") === true && cfg.quantum === true) {	$("body").append(buildQuantumPiece("w?", "wP", "w?", true, draggedPieceId));
+	}
+	else {
+		$("body").append(buildPiece("wP", true, draggedPieceId));
+	}
 	draggedPieceEl = $('#' + draggedPieceId);
 
 	// get the border size
