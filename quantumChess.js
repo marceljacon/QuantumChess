@@ -31,13 +31,13 @@ function highlightSquare(square) {
 
 function updateTurnText(turn) {
 	if(turn === "w") {
-		$("#turn").addClass("white");
+		$("#turn").addClass("red");
 		$("#turn").removeClass("black");
-		$("#turn").html("White's");
+		$("#turn").html("Red's");
 	}
 	else {
 		$("#turn").addClass("black");
-		$("#turn").removeClass("white");
+		$("#turn").removeClass("red");
 		$("#turn").html("Black's");
 	}
 }
@@ -56,7 +56,7 @@ function displayBoard() {
 			case UNKNOWN:
 				mainObj[square] = primaryObj[square].substring(0,1) + "?"; //w? or b?
 				break;
-		}	
+		}
 	}
 	for (var square in piecesKnown) {
 		if (!piecesKnown[square]) {

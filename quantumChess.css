@@ -12,17 +12,15 @@
 }
 
 #turn {
-	border: 1px solid black;
+	color: white;
 	border-radius: 3px;
 	padding: 3px 7px;
 }
 
-#turn.white {
-	color: black;
-	background-color: white;
+#turn.red {
+	background-color: #dd0000;
 }
 
 #turn.black {
-	color: white;
 	background-color: #333;
 }
