@@ -1199,13 +1199,26 @@ function beginDraggingPiece(source, piece, x, y) {
 	captureSquareOffsets();
 
 	// create the dragged piece
-	draggedPieceEl.attr('src', buildPieceImgSrc(piece))
-		.css({
+	if (cfg.hasOwnProperty("quantum") === true && cfg.quantum === true) {
+		draggedPieceEl.find(".state").attr('src', buildPieceImgSrc(CURRENT_POSITION[source]).replace(/\?/, "Quantum"));
+		draggedPieceEl.find(".primary").attr('src', buildPieceImgSrc(CURRENT_PRIMARY[source]));
+		draggedPieceEl.find(".secondary").attr('src', buildPieceImgSrc(CURRENT_SECONDARY[source]).replace(/\?/, "Quantum"));
+		draggedPieceEl.css({
 			display: '',
 			position: 'absolute',
 			left: x - (SQUARE_SIZE / 2),
 			top: y - (SQUARE_SIZE / 2)
 		});
+	}
+	else {
+		draggedPieceEl.attr('src', buildPieceImgSrc(piece))
+			.css({
+				display: '',
+				position: 'absolute',
+				left: x - (SQUARE_SIZE / 2),
+				top: y - (SQUARE_SIZE / 2)
+			});
+	}
 
 	if (source !== 'spare') {
 		// highlight the source square and hide the piece
