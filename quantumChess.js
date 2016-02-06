@@ -55,16 +55,20 @@ function endTurn(source, target) {
 	}
 	piecesKnown[target] = piecesKnown[source];
 	delete piecesKnown[source];
-	delete state[source];
+	if (source !== target) {
+		delete state[source];
+	}
 	updateTurn();
+	displayBoard();
 }
 function promotePiece(source, target) {
+	var color = turn;
 	var html = "";
 	html += '<div id="buttons">';
 	for (var i = 0; i < 4; i++) {
 		var letter = "bnrq".split("")[i];
 		html += '<button data-piecetype="' + letter + '">';
-		html += '<img src="lib/chessboardjs/img/chesspieces/' + turn + letter.toUpperCase() + '.png">';
+		html += '<img src="lib/chessboardjs/img/chesspieces/' + color + letter.toUpperCase() + '.png">';
 		html += '</button>';
 	}
 	html += '</div>';
@@ -75,16 +79,16 @@ function promotePiece(source, target) {
 		showConfirmButton: false,
 		allowEscapeKey: false	
 	});
-	$("#buttons button").click(function(e) {
-		sweetAlert.close();
+	$("#buttons button").click(function() {
 		var letter = $(this).data("piecetype");
 		primary.remove(source);
 		primary.put({
 			type: letter,
-			color: turn
+			color: color
 		}, target);
 		secondary.put(secondary.remove(source), target);
-		$(this).off(e);
+		sweetAlert.close();
+		endTurn(source, target);
 	})
 }
 function displayBoard() {
@@ -118,8 +122,6 @@ $(document).ready(function() {
 		if ((turn === "w" && piece.search(/^w/) === -1) || (turn === "b" && piece.search(/^b/) === -1)) {
 			return false;
 		}
-
-		console.log(locked);
 
 		if (locked !== null && locked !== source) {
 			return false;
@@ -187,7 +189,7 @@ $(document).ready(function() {
 		// promote if pawn is active at ends
 		if (source === target && game.get(source).type === "p" && ((source.substring(1) === "8" && turn === "w") || (source.substring(1) === "1" && turn === "b"))) {
 			promotePiece(source, target);
-			endTurn(source, target);
+			return;
 		}
 
 		var valid = false;
@@ -196,7 +198,6 @@ $(document).ready(function() {
 				valid = true;
 				if (moves[i].flags.indexOf("p") !== -1) { // Check for promotion
 					promotePiece(source, target);
-					endTurn(source, target);
 				}
 				else { // Valid move, not promotion
 					primary.put(primary.remove(source), target);
@@ -208,7 +209,6 @@ $(document).ready(function() {
 		}
 
 
-		displayBoard();
 		if (!valid) { // Move not to target; still locked
 			return "snapback";
 		}
