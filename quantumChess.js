@@ -58,8 +58,21 @@ function endTurn(source, target) {
 	if (source !== target) {
 		delete state[source];
 	}
+	if (primary.fen().indexOf("k") === -1) {
+		gameOver("White");
+	}
+	if (primary.fen().indexOf("K") === -1) {
+		gameOver("Black");
+	}
+	/* TODO: implement ties */
 	updateTurn();
 	displayBoard();
+}
+function gameOver(winner) {
+	/* TODO: do more than say winner */
+	sweetAlert({
+		title: winner + " wins!"
+	});
 }
 function promotePiece(source, target) {
 	var color = turn;
@@ -118,7 +131,6 @@ function displayBoard() {
 
 $(document).ready(function() {
 	var onDragStart = function(source, piece, position, orientation) {
-		/* TODO: check if king is taken */
 		if ((turn === "w" && piece.search(/^w/) === -1) || (turn === "b" && piece.search(/^b/) === -1)) {
 			return false;
 		}
