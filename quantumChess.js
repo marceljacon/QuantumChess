@@ -81,6 +81,13 @@ function gameOver(winner) {
 	});
 }
 
+function checkPromotion(game, source) {
+	return game.get(source).type === "p" && (
+		(source.substring(1) === "8" && turn === "w") ||
+		(source.substring(1) === "1" && turn === "b")
+	);
+}
+
 function promotePiece(source, target) {
 	var color = turn;
 	var promotionOptions = "";
@@ -217,7 +224,7 @@ $(document).ready(function() {
 		});
 
 		// Promote if pawn is active at end
-		if (source === target && game.get(source).type === "p" && ((source.substring(1) === "8" && turn === "w") || (source.substring(1) === "1" && turn === "b"))) {
+		if (source === target && checkPromotion(game, source)) {
 			promotePiece(source, target);
 			return;
 		}
