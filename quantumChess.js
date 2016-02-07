@@ -235,7 +235,7 @@ $(document).ready(function() {
 		}
 	};
 
-	var onSnapEnd = function() {
+	var onSnapbackEnd = function() {
 		displayBoard();
 	};
 
@@ -271,7 +271,7 @@ $(document).ready(function() {
 		"pieceTheme": "lib/chessboardjs/img/chesspieces/{piece}.png",
 		"onDragStart": onDragStart,
 		"onDrop": onDragEnd,
-		"onSnapEnd": onSnapEnd
+		"onSnapbackEnd": onSnapbackEnd
 	};
 	board = ChessBoard("board", config); // Initialize chessboard
 	displayBoard();
