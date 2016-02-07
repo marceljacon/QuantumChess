@@ -188,8 +188,6 @@ $(document).ready(function() {
 			if (state[source] === PRIMARY && checkPromotion(source)) {
 				promotePiece(source, source);
 			}
-			state[source] = UNKNOWN;
-			displayBoard();
 			updateTurn();
 			return false;
 		}
