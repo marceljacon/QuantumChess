@@ -134,6 +134,7 @@ function displayBoard() {
 		}
 	}
 	board.quantumPosition(mainObj, primaryObj, secondaryObj);
+	$(".square-" + locked).addClass("highlight1-32417");
 }
 
 $(document).ready(function() {
