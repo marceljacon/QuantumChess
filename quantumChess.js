@@ -81,8 +81,8 @@ function gameOver(winner) {
 	});
 }
 
-function checkPromotion(game, source) {
-	return game.get(source).type === "p" && (
+function checkPromotion(source) {
+	return primary.get(source).type === "p" && (
 		(source.substring(1) === "8" && turn === "w") ||
 		(source.substring(1) === "1" && turn === "b")
 	);
@@ -108,7 +108,7 @@ function promotePiece(source, target) {
 		allowEscapeKey: false
 	});
 
-	$("#buttons button").one(function() {
+	$("#buttons button").one("click", function() {
 		var letter = $(this).data("piecetype");
 
 		primary.remove(source);
@@ -168,26 +168,26 @@ $(document).ready(function() {
 			state[source] = (Math.random() < 0.5 ? PRIMARY : SECONDARY);
 		}
 
-		var moves;
+		var moves, game;
 		if (state[source] === PRIMARY) {
-			moves = primary.moves({
-				"square": source,
-				"verbose": true,
-				"legal": false
-			});
+			game = primary;
 		}
-		if (state[source] === SECONDARY) {
-			moves = secondary.moves({
-				"square": source,
-				"verbose": true,
-				"legal": false
-			});
+		else if (state[source] === SECONDARY) {
+			game = secondary;
 			piecesKnown[source] = true;
 		}
+		moves = game.moves({
+			"square": source,
+			"verbose": true,
+			"legal": false
+		});
 
 		displayBoard();
 
 		if (moves.length === 0 && initiallyUnknown) { // Piece is unknown and has the potential to be a piece with moves
+			if (state[source] === PRIMARY && checkPromotion(source)) {
+				promotePiece(source, source);
+			}
 			state[source] = UNKNOWN;
 			displayBoard();
 			updateTurn();
@@ -224,7 +224,7 @@ $(document).ready(function() {
 		});
 
 		// Promote if pawn is active at end
-		if (source === target && checkPromotion(game, source)) {
+		if (source === target && checkPromotion(source)) {
 			promotePiece(source, target);
 			return;
 		}
