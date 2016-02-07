@@ -54,9 +54,13 @@
 }
 
 /* pieces */
+.board-b72b1 .piece-417db {
+	padding-top: 5%;
+}
+
 .piece-417db .state {
 	display: block;
-	margin: 5% auto 0;
+	margin: 0 auto;
 	width: 50%;
 }
 
