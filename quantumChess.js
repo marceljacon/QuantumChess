@@ -49,11 +49,11 @@ function updateTurn() {
 }
 
 function endTurn(source, target) {
-	if (primary.square_color(target) === "dark") {
-		state[target] = UNKNOWN;
-	}
-	else if (primary.square_color(target) === "light") {
+	if (primary.square_color(target) === "light" || primary.get(target).type === "k") {
 		state[target] = state[source];
+	}
+	else if (primary.square_color(target) === "dark") {
+		state[target] = UNKNOWN;
 	}
 
 	piecesKnown[target] = piecesKnown[source];
