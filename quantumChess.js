@@ -14,10 +14,6 @@ function shuffleArray(array) {
 	return array;
 }
 
-function removeHighlights() {
-	$("#board .square-55d63").css("backgroundColor", "");
-}
-
 function highlightSquare(square) {
 	var squareEl = $("#board .square-" + square);
 
@@ -27,6 +23,10 @@ function highlightSquare(square) {
 	}
 
 	squareEl.css("backgroundColor", background);
+}
+
+function removeHighlights() {
+	$("#board .square-55d63").css("backgroundColor", "");
 }
 
 function updateTurn() {
@@ -82,30 +82,34 @@ function gameOver(winner) {
 
 function promotePiece(source, target) {
 	var color = turn;
-	var html = "";
-	html += '<div id="buttons">';
+	var promotionOptions = "";
+	promotionOptions += '<div id="buttons">';
 	for (var i = 0; i < 4; i++) {
 		var letter = "bnrq".split("")[i];
-		html += '<button data-piecetype="' + letter + '">';
-		html += '<img src="lib/chessboardjs/img/chesspieces/' + color + letter.toUpperCase() + '.png">';
-		html += '</button>';
+		promotionOptions += '<button data-piecetype="' + letter + '">';
+		promotionOptions += '<img src="lib/chessboardjs/img/chesspieces/' + color + letter.toUpperCase() + '.png">';
+		promotionOptions += '</button>';
 	}
-	html += '</div>';
+	promotionOptions += '</div>';
+
 	sweetAlert({
 		title: "Which piece would you like to promote this pawn to?",
-		text: html,
+		text: promotionOptions,
 		html: true,
 		showConfirmButton: false,
 		allowEscapeKey: false
 	});
-	$("#buttons button").click(function() {
+
+	$("#buttons button").one(function() {
 		var letter = $(this).data("piecetype");
+
 		primary.remove(source);
 		primary.put({
 			type: letter,
 			color: color
 		}, target);
 		secondary.put(secondary.remove(source), target);
+
 		sweetAlert.close();
 		endTurn(source, target);
 	})
@@ -128,11 +132,13 @@ function displayBoard() {
 				break;
 		}
 	}
+
 	for (var square in piecesKnown) {
 		if (!piecesKnown[square]) {
 			secondaryObj[square] = secondaryObj[square].substring(0,1) + "?";
 		}
 	}
+
 	board.quantumPosition(mainObj, primaryObj, secondaryObj);
 	$(".square-" + locked).addClass("highlight1-32417");
 }
@@ -199,7 +205,7 @@ $(document).ready(function() {
 		if (state[source] === PRIMARY) {
 			game = primary;
 		}
-		if (state[source] === SECONDARY) {
+		else if (state[source] === SECONDARY) {
 			game = secondary;
 		}
 		moves = game.moves({
@@ -208,7 +214,7 @@ $(document).ready(function() {
 			"legal": false
 		});
 
-		// Promote if pawn is active at ends
+		// Promote if pawn is active at end
 		if (source === target && game.get(source).type === "p" && ((source.substring(1) === "8" && turn === "w") || (source.substring(1) === "1" && turn === "b"))) {
 			promotePiece(source, target);
 			return;
