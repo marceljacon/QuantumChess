@@ -1,6 +1,9 @@
 # QuantumChess
 QUANTUM BROSEPH
 
+## Rules of the game
+http://research.cs.queensu.ca/Parallel/QuantumChess/QuantumChess.html
+
 ## Libraries
 - [chess.js](https://github.com/jhlywa/chess.js) - JavaScript Chess Logic
 - [chessboard.js](https://github.com/oakmac/chessboardjs) - JavaScript Chess Board
