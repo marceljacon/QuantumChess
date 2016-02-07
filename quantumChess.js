@@ -46,6 +46,7 @@ function updateTurn() {
 		$("#turn").html("Black's");
 	}
 }
+
 function endTurn(source, target) {
 	if (primary.square_color(target) === "dark") {
 		state[target] = UNKNOWN;
@@ -53,27 +54,32 @@ function endTurn(source, target) {
 	else if (primary.square_color(target) === "light") {
 		state[target] = state[source];
 	}
+
 	piecesKnown[target] = piecesKnown[source];
 	delete piecesKnown[source];
 	if (source !== target) {
 		delete state[source];
 	}
+
 	if (primary.fen().indexOf("k") === -1) {
 		gameOver("White");
 	}
 	if (primary.fen().indexOf("K") === -1) {
 		gameOver("Black");
 	}
+
 	/* TODO: implement ties */
 	updateTurn();
 	displayBoard();
 }
+
 function gameOver(winner) {
 	/* TODO: do more than say winner */
 	sweetAlert({
 		title: winner + " wins!"
 	});
 }
+
 function promotePiece(source, target) {
 	var color = turn;
 	var html = "";
@@ -90,7 +96,7 @@ function promotePiece(source, target) {
 		text: html,
 		html: true,
 		showConfirmButton: false,
-		allowEscapeKey: false	
+		allowEscapeKey: false
 	});
 	$("#buttons button").click(function() {
 		var letter = $(this).data("piecetype");
@@ -104,6 +110,7 @@ function promotePiece(source, target) {
 		endTurn(source, target);
 	})
 }
+
 function displayBoard() {
 	var primaryObj = ChessBoard.fenToObj(primary.fen());
 	var secondaryObj = ChessBoard.fenToObj(secondary.fen());
@@ -165,11 +172,11 @@ $(document).ready(function() {
 
 		displayBoard();
 
-		if (moves.length === 0 && initiallyUnknown) {
+		if (moves.length === 0 && initiallyUnknown) { // Piece is unknown and has the potential to be a piece with moves
 			updateTurn();
 			return false;
 		}
-		if (moves.length === 0) {
+		if (moves.length === 0) { // Piece is known to not be able to move
 			locked = null;
 			return false;
 		}
@@ -198,7 +205,7 @@ $(document).ready(function() {
 			"legal": false
 		});
 
-		// promote if pawn is active at ends
+		// Promote if pawn is active at ends
 		if (source === target && game.get(source).type === "p" && ((source.substring(1) === "8" && turn === "w") || (source.substring(1) === "1" && turn === "b"))) {
 			promotePiece(source, target);
 			return;
