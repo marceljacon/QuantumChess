@@ -173,6 +173,8 @@ $(document).ready(function() {
 		displayBoard();
 
 		if (moves.length === 0 && initiallyUnknown) { // Piece is unknown and has the potential to be a piece with moves
+			state[source] = UNKNOWN;
+			displayBoard();
 			updateTurn();
 			return false;
 		}
