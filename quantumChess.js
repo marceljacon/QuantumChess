@@ -31,6 +31,7 @@ function removeHighlights() {
 
 function updateTurn() {
 	locked = null;
+	$(".highlight1-32417").removeClass("highlight1-32417");
 	turn = (turn === "w" ? "b" : "w");
 	primary.load(primary.fen().replace(/\s[wb]/, " " + turn));
 	secondary.load(secondary.fen().replace(/\s[wb]/, " " + turn));
@@ -187,6 +188,7 @@ $(document).ready(function() {
 		}
 		if (moves.length === 0) { // Piece is known to not be able to move
 			locked = null;
+			$(".highlight1-32417").removeClass("highlight1-32417");
 			return false;
 		}
 
