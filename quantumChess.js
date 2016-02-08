@@ -1,4 +1,4 @@
-var board, primary, secondary, state, turn, piecesKnown, locked; // state: primary, secondary, unknown
+var resizeTimeout, board, primary, secondary, state, turn, piecesKnown, locked; // state: primary, secondary, unknown
 
 var PRIMARY = "p";
 var SECONDARY = "s";
@@ -289,4 +289,11 @@ $(document).ready(function() {
 	};
 	board = ChessBoard("board", config); // Initialize chessboard
 	displayBoard();
+
+	$(window).resize(function() {
+		clearTimeout(resizeTimeout);
+		resizeTimeout = setTimeout(function() {
+			board.resize();
+		}, 500);
+	});
 });
